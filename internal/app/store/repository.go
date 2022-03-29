@@ -1,8 +1,10 @@
 package store
 
-type CacheRepository interface {
-	Get(string) (string, error)
-	Set(string, string) error
+import "github.com/belanenko/orders-service/internal/app/model"
 
-	GetAll() (map[string]string, error)
+type OrderRepository interface {
+	Get(string) (*model.Order, error)
+	Set(*model.Order) error
+
+	GetAll() (map[string]*model.Order, error)
 }
