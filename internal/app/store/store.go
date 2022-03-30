@@ -1,5 +1,5 @@
 package store
 
-type Store interface {
-	Order() *OrderRepository
+type StoreInterface interface {
+	Item() ItemRepositoryInterface
 }

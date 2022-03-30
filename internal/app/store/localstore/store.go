@@ -1,27 +1,31 @@
 package localstore
 
-import "github.com/belanenko/orders-service/internal/app/model"
+import (
+	"sync"
+
+	"github.com/belanenko/orders-service/internal/app/model"
+	"github.com/belanenko/orders-service/internal/app/store"
+)
 
 type Store struct {
-	orderRepository *OrderRepository
+	m              sync.RWMutex
+	items          map[string]model.ItemInterface
+	itemRepository store.ItemRepositoryInterface
 }
 
-func New() *Store {
-	return &Store{}
-}
-
-func (s *Store) Order() *OrderRepository {
-	if s.orderRepository != nil {
-		return s.orderRepository
+func (s *Store) Item() store.ItemRepositoryInterface {
+	if s.itemRepository != nil {
+		return s.itemRepository
 	}
 
-	s.orderRepository = &OrderRepository{
+	s.items = make(map[string]model.ItemInterface)
+	s.itemRepository = &ItemRepository{
 		store: s,
 	}
 
-	if s.orderRepository.items == nil {
-		s.orderRepository.items = make(map[string]*model.Order)
-	}
+	return s.itemRepository
+}
 
-	return s.orderRepository
+func New() store.StoreInterface {
+	return &Store{}
 }

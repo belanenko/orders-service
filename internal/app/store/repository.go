@@ -2,9 +2,9 @@ package store
 
 import "github.com/belanenko/orders-service/internal/app/model"
 
-type OrderRepository interface {
-	Get(string) (*model.Order, error)
-	Set(*model.Order) error
+type ItemRepositoryInterface interface {
+	Get(key string) (model.ItemInterface, error)
+	Set(key string, item model.ItemInterface) error
 
-	GetAll() (map[string]*model.Order, error)
+	GetAll() (map[string]model.ItemInterface, error)
 }
