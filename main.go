@@ -9,15 +9,25 @@ import (
 	"github.com/belanenko/orders-service/internal/app/store"
 	"github.com/belanenko/orders-service/internal/app/store/localstore"
 	"github.com/belanenko/orders-service/internal/app/store/sqlstore"
+	"github.com/caarlos0/env/v6"
+	"github.com/joho/godotenv"
 	"github.com/nats-io/stan.go"
 
 	_ "github.com/lib/pq" // ...
 )
 
 func main() {
+	godotenv.Load()
+
 	localstore := localstore.New()
 
-	sqlConn, err := sql.Open("postgres", "host=127.0.0.1 port=5432 user=admin password=123 dbname=dev sslmode=disable")
+	sqlConfig := sqlstore.NewConfig()
+	env.Parse(sqlConfig)
+	if sqlConfig.DatabaseUrl == "" {
+		log.Fatal("connection string not found")
+	}
+
+	sqlConn, err := sql.Open("postgres", sqlConfig.DatabaseUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,7 +45,8 @@ func main() {
 	broker := msgbroker.New(&stanConn)
 
 	config := apiserver.NewConfig()
-	config.BindAddr = ":8081"
+	env.Parse(config)
+
 	apiserver := apiserver.New(storage, broker, config)
 	if err := apiserver.Start(); err != nil {
 		log.Fatal(err)

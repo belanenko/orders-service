@@ -10,9 +10,11 @@ require (
 require golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 // indirect
 
 require (
+	github.com/caarlos0/env/v6 v6.9.1
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/gorilla/mux v1.8.0
+	github.com/joho/godotenv v1.4.0
 	github.com/nats-io/nats.go v1.13.0 // indirect
 	github.com/nats-io/nkeys v0.3.0 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
