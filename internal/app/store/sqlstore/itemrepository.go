@@ -44,10 +44,9 @@ func (r *ItemRepository) GetAll() (map[string]model.ItemInterface, error) {
 		return nil, err
 	}
 
-	var key string
-	var item model.Order
-
 	for rows.Next() {
+		var key string
+		var item model.Order
 		rows.Scan(&key, &item)
 
 		items[key] = &item
