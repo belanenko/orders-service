@@ -33,6 +33,7 @@ func New(store store.StoreInterface, borker msgbroker.BrokerInterface, config *C
 func (s *APIServer) Start() error {
 	s.configureRouter()
 	s.configureSubscribes()
+	s.Logger.Infof("Start to listen %s", s.config.BindAddr)
 	return http.ListenAndServe(s.config.BindAddr, s.Router)
 }
 
@@ -68,6 +69,9 @@ func (s *APIServer) configureRouter() {
 		}
 		w.Write(jsonStr)
 	})
+
+	fileServer := http.FileServer(http.Dir("./web/static"))
+	s.Router.Handle("/", fileServer)
 }
 
 func (s *APIServer) configureSubscribes() {
