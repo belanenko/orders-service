@@ -66,3 +66,8 @@ func (o *Order) Scan(value interface{}) error {
 
 	return json.Unmarshal(b, &o)
 }
+
+func (o *Order) Json() []byte {
+	v, _ := json.Marshal(o)
+	return v
+}

@@ -1,5 +1,11 @@
 package store
 
+import (
+	"encoding/json"
+
+	"github.com/belanenko/orders-service/internal/app/model"
+)
+
 type Store struct {
 	localstore     StoreInterface
 	sqlstore       StoreInterface
@@ -11,16 +17,6 @@ func (s *Store) Item() ItemRepositoryInterface {
 		return s.itemRepository
 	}
 
-	// rows, err := s.localstore.Item().GetAll()
-	// if err != nil {
-	// 	log.Fatal("-_- скачать кеш с бд не вышло, я упал")
-	// }
-
-	// for _, row := range rows {
-	// 	d, _ := row.Value()
-	// 	s.localstore.Item().Set(d row)
-	// }
-
 	s.itemRepository = &ItemRepository{
 		store: s,
 	}
@@ -28,9 +24,33 @@ func (s *Store) Item() ItemRepositoryInterface {
 	return s.itemRepository
 }
 
+func (s Store) LocalCache() error {
+	rows, err := s.sqlstore.Item().GetAll()
+	if err != nil {
+		return err
+	}
+
+	for _, row := range rows {
+		valueJson := row.Json()
+		var item model.Order
+		if err := json.Unmarshal(valueJson, &item); err != nil {
+			return err
+		}
+		if err := s.localstore.Item().Set(item.OrderUID, &item); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func New(localstore StoreInterface, sqlstore StoreInterface) *Store {
-	return &Store{
+	s := &Store{
 		localstore: localstore,
 		sqlstore:   sqlstore,
 	}
+
+	s.LocalCache()
+
+	return s
 }
