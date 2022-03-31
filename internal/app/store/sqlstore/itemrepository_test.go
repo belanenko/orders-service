@@ -1,15 +1,17 @@
 package sqlstore
 
 import (
+	"os"
 	"testing"
 
 	"github.com/belanenko/orders-service/internal/app/model"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq" // ...
 	"github.com/stretchr/testify/assert"
 )
 
 func TestItemRepository_Set(t *testing.T) {
-	db, teardown := TestDB(t, "host=127.0.0.1 port=5432 user=rwuser password=password dbname=dev sslmode=disable")
+	db, teardown := TestDB(t, os.Getenv(""))
 	defer teardown("items")
 
 	key, value := "mew1", &model.Order{OrderUID: "qwe"}
@@ -20,7 +22,7 @@ func TestItemRepository_Set(t *testing.T) {
 }
 
 func TestItemRepository_Get(t *testing.T) {
-	db, teardown := TestDB(t, "host=127.0.0.1 port=5432 user=rwuser password=password dbname=dev sslmode=disable")
+	db, teardown := TestDB(t, os.Getenv("TEST_DATABASE_URL"))
 	defer teardown("items")
 
 	key, value := "mew", &model.Order{OrderUID: "mewmwemw"}
@@ -38,7 +40,7 @@ func TestItemRepository_Get(t *testing.T) {
 }
 
 func TestItemRepository_GetAll(t *testing.T) {
-	db, teardown := TestDB(t, "host=127.0.0.1 port=5432 user=rwuser password=password dbname=dev sslmode=disable")
+	db, teardown := TestDB(t, os.Getenv("TEST_DATABASE_URL"))
 	defer teardown("items")
 
 	items := make(map[string]model.ItemInterface)
@@ -57,4 +59,9 @@ func TestItemRepository_GetAll(t *testing.T) {
 	assert.EqualValues(t, len(items), len(actual))
 	assert.EqualValues(t, items["1"], actual["1"])
 
+}
+
+func TestMain(m *testing.M) {
+	godotenv.Load()
+	os.Exit(m.Run())
 }
