@@ -38,6 +38,23 @@ func (s *APIServer) Start() error {
 
 func (s *APIServer) configureRouter() {
 	s.Router.HandleFunc("/api/orders", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			w.Header().Add("ALLOW", "GET")
+			w.WriteHeader(http.StatusMethodNotAllowed)
+			return
+		}
+
+		id := r.URL.Query().Get("id")
+		if id != "" {
+			item, _ := s.Store.Item().Get(id)
+			if item == nil {
+				w.WriteHeader(http.StatusNoContent)
+				return
+			}
+			w.Write(item.Json())
+			return
+		}
+
 		items, err := s.Store.Item().GetAll()
 		if err != nil {
 			w.WriteHeader(http.StatusBadGateway)
