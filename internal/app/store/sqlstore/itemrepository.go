@@ -26,7 +26,7 @@ func (r *ItemRepository) Set(key string, item model.ItemInterface) error {
 		return err
 	}
 	q := fmt.Sprintf(
-		"INSERT INTO items (key, value) VALUES ('%s', '%s') ON CONFLICT (key) DO UPDATE SET value = items.value;",
+		"INSERT INTO items (key, value) VALUES ('%s', '%s') ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;",
 		key,
 		value,
 	)
