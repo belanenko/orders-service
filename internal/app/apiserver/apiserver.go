@@ -79,7 +79,7 @@ func (s *APIServer) configureSubscribes() {
 		var item model.Order
 		json.Unmarshal(msg.Data, &item)
 		if err := s.Store.Item().Set(item.OrderUID, &item); err != nil {
-			s.Logger.Infof("Recived msg bad format: %s", msg.Data)
+			s.Logger.Infof("Recived msg bad format: %s", err)
 		}
 	})
 }
