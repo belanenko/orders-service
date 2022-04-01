@@ -1,6 +1,7 @@
 package sqlstore
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/belanenko/orders-service/internal/app/model"
@@ -37,20 +38,21 @@ func (r *ItemRepository) Set(key string, item model.ItemInterface) error {
 }
 
 func (r *ItemRepository) GetAll() (map[string]model.ItemInterface, error) {
-	q := fmt.Sprintf("SELECT key, value FROM items;")
-	var items map[string]model.ItemInterface = make(map[string]model.ItemInterface)
+	q := "SELECT key, value FROM items;"
+	orders := map[string]model.ItemInterface{}
+
 	rows, err := r.store.db.Query(q)
 	if err != nil {
 		return nil, err
 	}
 
 	for rows.Next() {
-		var key string
-		var item model.Order
-		rows.Scan(&key, &item)
-
-		items[key] = &item
+		var order *model.Order = new(model.Order)
+		var k1, k2 string
+		rows.Scan(&k1, &k2)
+		json.Unmarshal([]byte(k2), order)
+		orders[order.OrderUID] = order
 	}
 
-	return items, nil
+	return orders, nil
 }
