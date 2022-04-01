@@ -6,29 +6,32 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    restart: always
     ports:
       - 5432:5432
     volumes:
-      - pg-service-data:/var/lib/postgresql
+      - pgsql-data:/var/lib/postgresql
 
   pgadmin:
     image: dpage/pgadmin4:6.7
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    restart: always
     ports:
       - 8080:80
     depends_on:
       - postgres
     volumes:
-      - pgadmin-service-data:/var/lib/pgadmin
+      - pgadmin-data:/var/lib/pgadmin
 
   nats-streaming:
     image: nats-streaming:0.24.3-alpine3.15
+    restart: always
     ports:
       - 4222:4222
       - 8222:8222
-    
+
 volumes:
-    pg-service-data:
-    pgadmin-service-data:
+    pgsql-data:
+    pgadmin-data:

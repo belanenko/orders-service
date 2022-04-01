@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"log"
+	"os"
 
 	"github.com/belanenko/orders-service/internal/app/apiserver"
 	"github.com/belanenko/orders-service/internal/app/msgbroker"
@@ -38,7 +39,7 @@ func main() {
 	sqlstore := sqlstore.New(sqlConn)
 	storage := store.New(localstore, sqlstore)
 
-	stanConn, err := stan.Connect("test-cluster", "me")
+	stanConn, err := stan.Connect(os.Getenv("STAN_CLUSTER_ID"), os.Getenv("STAN_CLIENT_ID"))
 	if err != nil {
 		log.Fatal(err)
 	}
